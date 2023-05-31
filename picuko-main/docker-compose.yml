@@ -1,0 +1,40 @@
+version: '3.3'
+
+services:
+  database:
+    image: postgres
+    container_name: pg_1
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=picuko_db
+    volumes:
+      - picuko_volume:/var/lib/postgresql/data
+    networks:
+      - picuko_network
+
+
+  application:
+    image: picuko_image
+    container_name: picuko-1
+    ports:
+      - "8080:8080"
+    environment:
+      - "USERNAME=postgres"
+      - "PASSWORD=postgres"
+      - "URL=jdbc:postgresql://database:5432/picuko_db"
+
+    networks:
+      - picuko_network
+    depends_on:
+      -   database
+
+
+volumes:
+  picuko_volume:
+    external: true
+
+networks:
+  picuko_network:
+    external: true
